@@ -45,6 +45,21 @@ export class CommunityController {
     const feed = await communityService.getFeed();
     res.json(successResponse(feed));
   };
+
+  getLeaderboard = async (req: Request, res: Response) => {
+    const college = req.query.college as string | undefined;
+    const branch = req.query.branch as string | undefined;
+    const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 50;
+
+    const leaderboard = await communityService.getLeaderboard({ college, branch, limit });
+    res.json(successResponse(leaderboard, 'Leaderboard fetched successfully'));
+  };
+
+  getTeamMatches = async (req: Request, res: Response) => {
+    const userId = req.user!.userId;
+    const matches = await communityService.getTeamMatchRecommendations(userId);
+    res.json(successResponse(matches, 'Team match recommendations fetched'));
+  };
 }
 
 export const communityController = new CommunityController();

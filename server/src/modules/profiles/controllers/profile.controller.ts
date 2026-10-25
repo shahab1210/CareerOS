@@ -55,6 +55,27 @@ export class ProfileController {
     const profile = await profileService.updateCareerInterests(userId, req.body.interests);
     res.json(successResponse(profile, 'Career interests updated successfully'));
   };
+
+  getPublicProfile = async (req: Request, res: Response) => {
+    const username = req.params.username as string;
+    const portfolio = await profileService.getPublicProfile(username);
+    res.json(successResponse(portfolio, 'Public portfolio fetched successfully'));
+  };
+
+  getTpoStats = async (req: Request, res: Response) => {
+    const college = req.query.college as string | undefined;
+    const stats = await profileService.getTpoStats(college);
+    res.json(successResponse(stats, 'TPO placement statistics fetched'));
+  };
+
+  getTpoStudents = async (req: Request, res: Response) => {
+    const branch = req.query.branch as string | undefined;
+    const minCgpa = req.query.minCgpa ? parseFloat(req.query.minCgpa as string) : undefined;
+    const placed = req.query.placed !== undefined ? req.query.placed === 'true' : undefined;
+
+    const students = await profileService.getTpoStudents({ branch, minCgpa, placed });
+    res.json(successResponse(students, 'TPO students directory fetched'));
+  };
 }
 
 export const profileController = new ProfileController();

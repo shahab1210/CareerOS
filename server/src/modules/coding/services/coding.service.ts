@@ -2,6 +2,11 @@ import { prisma } from '@/config/database';
 import { AppError } from '@/common/errors/AppError';
 import { ErrorCodes } from '@/common/errors/ErrorCodes';
 
+import { fetchLeetCodeStats } from '../adapters/leetcode.adapter';
+import { fetchCodeforcesStats } from '../adapters/codeforces.adapter';
+import { fetchCodeChefStats } from '../adapters/codechef.adapter';
+import { fetchHackerRankStats } from '../adapters/hackerrank.adapter';
+
 export class CodingService {
   async getCodingProfiles(userId: string) {
     const profile = await prisma.studentProfile.findUnique({
@@ -25,70 +30,58 @@ export class CodingService {
       throw new AppError(404, ErrorCodes.RESOURCE_NOT_FOUND, 'Profile not found');
     }
 
-    // Generate realistic problem-solving / activity mock statistics
     let solved = 0;
     let rating = 0;
     let rank = 0;
     let streak = 0;
 
     switch (data.platform) {
-      case 'LEETCODE':
+      case 'LEETCODE': {
+        const stats = await fetchLeetCodeStats(data.username);
+        solved = stats.solved;
+        rating = stats.rating;
+        rank = stats.rank;
+        streak = stats.streak;
+        break;
+      }
+      case 'CODEFORCES': {
+        const stats = await fetchCodeforcesStats(data.username);
+        solved = stats.solved;
+        rating = stats.rating;
+        rank = stats.rank;
+        streak = stats.streak;
+        break;
+      }
+      case 'CODECHEF': {
+        const stats = await fetchCodeChefStats(data.username);
+        solved = stats.solved;
+        rating = stats.rating;
+        rank = stats.rank;
+        streak = stats.streak;
+        break;
+      }
+      case 'HACKERRANK': {
+        const stats = await fetchHackerRankStats(data.username);
+        solved = stats.solved;
+        rating = stats.rating;
+        rank = stats.rank;
+        streak = stats.streak;
+        break;
+      }
+      case 'GITHUB': {
         try {
-          const query = `
-            query getUserProfile($username: String!) {
-              matchedUser(username: $username) {
-                submitStats: submitStatsGlobal {
-                  acSubmissionNum {
-                    difficulty
-                    count
-                  }
-                }
-                profile {
-                  ranking
-                }
-              }
-            }
-          `;
-          const res = await fetch('https://leetcode.com/graphql', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ query, variables: { username: data.username } })
+          const res = await fetch(`https://api.github.com/users/${data.username}`, {
+            headers: { 'User-Agent': 'CareerOS-Platform' }
           });
-          if (res.ok) {
-            const ldata = await res.json();
-            const matchedUser = ldata.data?.matchedUser;
-            if (matchedUser) {
-              const allSubmissions = matchedUser.submitStats?.acSubmissionNum?.find((s: any) => s.difficulty === 'All');
-              solved = allSubmissions?.count || 0;
-              rank = matchedUser.profile?.ranking || 0;
-            }
-          }
-        } catch (e) {
-          console.error("Failed to fetch LeetCode data", e);
-        }
-        break;
-      case 'HACKERRANK':
-        break;
-      case 'CODECHEF':
-        break;
-      case 'CODEFORCES':
-        break;
-      case 'GITHUB':
-        try {
-          const res = await fetch(`https://api.github.com/users/${data.username}`);
           if (res.ok) {
             const gdata = await res.json();
             solved = gdata.public_repos || 0;
-            rating = 0;
-            rank = 0;
-            streak = 0;
           }
         } catch (e) {
           console.error("Failed to fetch GitHub data", e);
         }
         break;
-      case 'GEEKSFORGEEKS':
-        break;
+      }
     }
 
     const codingProfile = await prisma.codingProfile.upsert({
