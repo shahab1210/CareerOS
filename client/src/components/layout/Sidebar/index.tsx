@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { 
   LayoutDashboard, Map, BookOpen, Code2, 
-  Briefcase, GraduationCap, Bot, Users, Settings, User 
+  Briefcase, GraduationCap, Bot, Users, Settings, User, Video, Building2 
 } from 'lucide-react';
 
 const navigation = [
@@ -11,8 +11,11 @@ const navigation = [
   { name: 'Roadmap', href: '/app/roadmap', icon: Map },
   { name: 'Coding Profiles', href: '/app/coding', icon: Code2 },
   { name: 'Projects', href: '/app/projects', icon: Briefcase },
+  { name: 'Mock Interviews', href: '/app/mock-interview', icon: Video },
+  { name: 'Campus & Teams', href: '/app/community', icon: Users },
   { name: 'Study Room', href: '/app/study-room', icon: BookOpen },
   { name: 'Jobs & Internships', href: '/app/jobs', icon: GraduationCap },
+  { name: 'Placement Cell (TPO)', href: '/app/tpo', icon: Building2 },
   { name: 'AI Mentor', href: '/app/ai-mentor', icon: Bot },
 ];
 

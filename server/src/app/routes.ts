@@ -12,6 +12,7 @@ import { opportunitiesRoutes } from '@/modules/opportunities';
 import { communityRoutes } from '@/modules/community';
 import { projectsRoutes } from '@/modules/projects';
 import { codingRoutes } from '@/modules/coding';
+import { mockInterviewRoutes } from '@/modules/mock-interview';
 
 const router = Router();
 
@@ -42,6 +43,7 @@ router.use('/opportunities', opportunitiesRoutes);
 router.use('/community', communityRoutes);
 router.use('/projects', projectsRoutes);
 router.use('/coding-profiles', codingRoutes);
+router.use('/mock-interview', mockInterviewRoutes);
 
 export const v1Router = router;
 

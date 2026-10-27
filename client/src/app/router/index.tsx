@@ -1,88 +1,128 @@
+import React, { Suspense } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
-import LandingPage from '@/pages/public/Landing';
-import LoginPage from '@/pages/auth/Login';
-import RegisterPage from '@/pages/auth/Register';
-import OnboardingPage from '@/pages/auth/Onboarding';
-import NotFoundPage from '@/pages/public/NotFound';
 import { App } from '../App';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import Dashboard from '@/pages/app/Dashboard';
-import RoadmapPage from '@/pages/app/Roadmap';
-import CodingProfilesPage from '@/pages/app/Coding';
-import ProjectsPage from '@/pages/app/Projects';
-import StudyRoomPage from '@/pages/app/StudyRoom';
-import JobsPage from '@/pages/app/Jobs';
-import AIMentorPage from '@/pages/app/AIMentor';
-import ProfilePage from '@/pages/app/Profile';
-import SettingsPage from '@/pages/app/Settings';
+import GlobalError from '@/components/errors/GlobalError';
+
+// Lazy loading pages for code splitting
+const LandingPage = React.lazy(() => import('@/pages/public/Landing'));
+const LoginPage = React.lazy(() => import('@/pages/auth/Login'));
+const RegisterPage = React.lazy(() => import('@/pages/auth/Register'));
+const OnboardingPage = React.lazy(() => import('@/pages/auth/Onboarding'));
+const NotFoundPage = React.lazy(() => import('@/pages/public/NotFound'));
+const Dashboard = React.lazy(() => import('@/pages/app/Dashboard'));
+const RoadmapPage = React.lazy(() => import('@/pages/app/Roadmap'));
+const CodingProfilesPage = React.lazy(() => import('@/pages/app/Coding'));
+const ProjectsPage = React.lazy(() => import('@/pages/app/Projects'));
+const StudyRoomPage = React.lazy(() => import('@/pages/app/StudyRoom'));
+const JobsPage = React.lazy(() => import('@/pages/app/Jobs'));
+const AIMentorPage = React.lazy(() => import('@/pages/app/AIMentor'));
+const ProfilePage = React.lazy(() => import('@/pages/app/Profile'));
+const SettingsPage = React.lazy(() => import('@/pages/app/Settings'));
+const MockInterviewPage = React.lazy(() => import('@/pages/app/MockInterview'));
+const CommunityPage = React.lazy(() => import('@/pages/app/Community'));
+const TPOPage = React.lazy(() => import('@/pages/app/TPO'));
+const PublicPortfolioPage = React.lazy(() => import('@/pages/public/PublicPortfolio'));
+
+// Suspense fallback component
+const PageLoader = () => (
+  <div className="flex h-screen w-full items-center justify-center">
+    <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
+  </div>
+);
+
+// HOC to wrap lazy components with Suspense
+const withSuspense = (Component: React.LazyExoticComponent<any>) => (
+  <Suspense fallback={<PageLoader />}>
+    <Component />
+  </Suspense>
+);
 
 export const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
+    errorElement: <GlobalError />,
     children: [
       {
         index: true,
-        element: <LandingPage />,
+        element: withSuspense(LandingPage),
       },
       {
         path: 'login',
-        element: <LoginPage />,
+        element: withSuspense(LoginPage),
       },
       {
         path: 'register',
-        element: <RegisterPage />,
+        element: withSuspense(RegisterPage),
       },
       {
         path: 'onboarding',
-        element: <OnboardingPage />,
+        element: withSuspense(OnboardingPage),
       },
 
       {
         path: 'app',
         element: <DashboardLayout />,
+        errorElement: <GlobalError />,
         children: [
           {
             path: 'dashboard',
-            element: <Dashboard />,
+            element: withSuspense(Dashboard),
           },
           {
             path: 'roadmap',
-            element: <RoadmapPage />,
+            element: withSuspense(RoadmapPage),
           },
           {
             path: 'coding',
-            element: <CodingProfilesPage />,
+            element: withSuspense(CodingProfilesPage),
           },
           {
             path: 'projects',
-            element: <ProjectsPage />,
+            element: withSuspense(ProjectsPage),
           },
           {
             path: 'study-room',
-            element: <StudyRoomPage />,
+            element: withSuspense(StudyRoomPage),
           },
           {
             path: 'jobs',
-            element: <JobsPage />,
+            element: withSuspense(JobsPage),
           },
           {
             path: 'ai-mentor',
-            element: <AIMentorPage />,
+            element: withSuspense(AIMentorPage),
           },
           {
             path: 'profile',
-            element: <ProfilePage />,
+            element: withSuspense(ProfilePage),
           },
           {
             path: 'settings',
-            element: <SettingsPage />,
+            element: withSuspense(SettingsPage),
+          },
+          {
+            path: 'mock-interview',
+            element: withSuspense(MockInterviewPage),
+          },
+          {
+            path: 'community',
+            element: withSuspense(CommunityPage),
+          },
+          {
+            path: 'tpo',
+            element: withSuspense(TPOPage),
           },
         ]
       },
       {
+        path: 'p/:username',
+        element: withSuspense(PublicPortfolioPage),
+      },
+      {
         path: '*',
-        element: <NotFoundPage />,
+        element: withSuspense(NotFoundPage),
       },
     ],
   },

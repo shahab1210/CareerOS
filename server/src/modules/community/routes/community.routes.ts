@@ -21,4 +21,8 @@ router.get('/network', asyncHandler(communityController.getNetwork));
 router.post('/posts', validateRequest(schemas.createPostSchema), asyncHandler(communityController.createPost));
 router.get('/feed', asyncHandler(communityController.getFeed));
 
+// Campus Leaderboard & Team Matchmaker
+router.get('/leaderboard', asyncHandler(communityController.getLeaderboard));
+router.get('/team-matches', asyncHandler(communityController.getTeamMatches));
+
 export const communityRoutes = router;
